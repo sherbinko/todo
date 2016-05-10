@@ -1,0 +1,31 @@
+/*
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    Copyright 2016, Andrey Shcherbinko. All rights reserved.
+*/
+
+.completed {
+    text-decoration: line-through;
+    color: gray;
+}
+
+.panel-heading h1 {
+    text-align: center;
+}
+
+.new-task {
+    font-size: large;
+    width: 100%;
+}
+
+.task-line label {
+    max-width: 80%;
+    word-break:break-all;
+}
+
+.task-line .delete-btn {
+    float: right;
+}
+
+.panel-footer {
+    text-align: center;
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    Copyright 2016, Andrey Shcherbinko. All rights reserved.
+-->
+<configuration>
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>default.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.springframework.boot.autoconfigure" level="debug">
+        <appender-ref ref="stdout"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="file" />
+        <appender-ref ref="stdout" />
+    </root>
+</configuration>

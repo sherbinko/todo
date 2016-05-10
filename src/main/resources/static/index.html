@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    Copyright 2016, Andrey Shcherbinko. All rights reserved.
+-->
+<html ng-app="todoApp">
+<script src="lib/angular.min.js"></script>
+<script src="js/app.js"></script>
+<link href="lib/bootstrap.min.css" rel="stylesheet">
+<link href="css/styles.css" rel="stylesheet">
+<body ng-controller="main" class="container">
+<div class="panel panel-default">
+    <div class="panel-heading"><h1 class=".panel-title">TODO List</h1></div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <form class="list-group-item" ng-submit="addTask(newTask);newTask=''">
+                <input class="new-task form-control" placeholder="New Task" type="text" ng-model="newTask">
+            </form>
+
+            <li class="task-line list-group-item" ng-repeat="task in tasks | filter: {status: statusToShow}">
+                <input id="chk-{{$index}}" type="checkbox" ng-model="task.status" ng-true-value="'COMPLETED'" ng-false-value="'NEW'" ng-change="changeStatus(task)">
+                <label for="chk-{{$index}}" ng-class="{completed: task.status == 'COMPLETED'}">{{task.desc}}</label>
+                <span class="delete-btn glyphicon glyphicon-trash" ng-click="deleteTask(task.id)"></span>
+            </li>
+        </ul>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" ng-click="statusToShow=''">All</button>
+            <button type="button" class="btn btn-default" ng-click="statusToShow='NEW'">New</button>
+            <button type="button" class="btn btn-default" ng-click="statusToShow='COMPLETED'">Completed</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
