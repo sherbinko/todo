@@ -1,7 +1,7 @@
-/*
-    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-    Copyright 2016, Andrey Shcherbinko. All rights reserved.
-*/
+body {
+    padding: 20px;
+    background: lightskyblue;
+}
 
 .completed {
     text-decoration: line-through;
@@ -23,9 +23,18 @@
 }
 
 .task-line .delete-btn {
+    font-size: large;
     float: right;
 }
 
 .panel-footer {
+    text-align: center;
+}
+
+.logout {
+    float: right;
+}
+
+.login-card {
     text-align: center;
 }

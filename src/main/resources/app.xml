@@ -5,9 +5,12 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd"
         >
+
+    <bean id="passwordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder"/>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="url" value="jdbc:sqlite:${db}"/>
@@ -19,7 +22,8 @@
             <bean id="dataSourcePopulator" class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator">
                 <property name="scripts">
                     <list>
-                        <value>classpath:schema.sql</value>
+                        <value>classpath:sql/schema.ddl</value>
+                        <value>classpath:sql/insert.sql</value>
                     </list>
                 </property>
             </bean>
@@ -45,5 +49,27 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
+    <security:http use-expressions="true" auto-config="true">
+        <security:intercept-url pattern="/" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/index.html" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/services/**" access="isAuthenticated()"/>
+
+        <security:form-login login-page="/login.html" default-target-url="/index.html"/>
+        <security:logout logout-url="/logout"/>
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <security:global-method-security proxy-target-class="true"/>
+
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <security:jdbc-user-service data-source-ref="dataSource"
+                                        users-by-username-query="select login, password, 1=1 from Users where login = ?"
+                                        authorities-by-username-query="select ?, NULL"/>
+            <security:password-encoder ref="passwordEncoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <bean class="org.springframework.boot.autoconfigure.security.SecurityProperties"/>
     <bean class="org.springframework.boot.autoconfigure.web.ServerProperties"/>
 </beans>

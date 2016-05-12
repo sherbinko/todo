@@ -10,7 +10,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "Tasks")
-@NamedQuery(name="Task.findAll", query="select t from Task t")
 public class Task {
     @Id
     @GeneratedValue
@@ -22,4 +21,8 @@ public class Task {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     public Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "owner", nullable = false)
+    public User owner;
 }

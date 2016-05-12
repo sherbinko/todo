@@ -16,15 +16,19 @@ import java.util.List;
  * Copyright 2016, Andrey Shcherbinko. All rights reserved.
  */
 @RestController
+@RequestMapping(path = "/services")
 public class TaskService {
     @Autowired
     CommonDAO dao;
+
+    @Autowired
+    AuthService authService;
 
     @RequestMapping(value = "/tasks", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskDTO> allTasks() {
         List<TaskDTO> dtos = new ArrayList<>();
-        for (Task t : dao.findTasks()) {
+        for (Task t : dao.findTasks(authService.getCurrLogin())) {
             dtos.add(new TaskDTO(t.id, t.desc, t.status));
         }
 
@@ -33,18 +37,20 @@ public class TaskService {
 
     @RequestMapping(value = "/tasks", method = RequestMethod.PUT)
     public Long addTask(@RequestBody String desc) {
-        Long id = dao.createTask(desc);
+        Long id = dao.createTask(desc, authService.getCurrLogin());
 
         return id;
     }
 
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.DELETE)
     public void deleteTask(@PathVariable Long id) {
+        authService.checkTaskOwner(id);
         dao.deleteTask(id);
     }
 
     @RequestMapping(value = "/tasks/{id}/status", method = RequestMethod.POST)
     public void changeStatus(@PathVariable Long id, @RequestBody String status) {
+        authService.checkTaskOwner(id);
         dao.setTaskStatus(id, Status.valueOf(status));
     }
 }

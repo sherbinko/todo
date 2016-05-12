@@ -1,6 +1,7 @@
 package data;
 
 import data.jpa.Task;
+import data.jpa.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.stereotype.Repository;
@@ -9,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vo.Status;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.List;
 
 /**
@@ -24,30 +24,39 @@ public class CommonDAO {
     @Autowired
     EntityManager entityManager;
 
-    public List<Task> findTasks() {
-        Query query = entityManager.createNamedQuery("Task.findAll");
-        List tasks = query.getResultList();
+    private User getUserByLogin(String login) {
+        User currUser = entityManager.find(User.class, login);
+
+        return currUser;
+    }
+
+    public List<Task> findTasks(String currLogin) {
+        List<Task> tasks = getUserByLogin(currLogin).tasks;
 
         return tasks;
     }
 
-    public Long createTask(String desc) {
+    public Long createTask(String desc, String currLogin) {
         Task t = new Task();
         t.status = Status.NEW;
         t.desc = desc;
+        t.owner = getUserByLogin(currLogin);
 
         entityManager.persist(t);
 
         return t.id;
     }
 
+    public Task getTaskById(long id) {
+        return entityManager.find(Task.class, id);
+    }
+
     public void deleteTask(long id) {
-        Task task = entityManager.find(Task.class, id);
-        entityManager.remove(task);
+        entityManager.remove(getTaskById(id));
     }
 
     public void setTaskStatus(long id, Status status) {
-        Task task = entityManager.find(Task.class, id);
+        Task task = getTaskById(id);
         task.status = status;
         entityManager.persist(task);
     }

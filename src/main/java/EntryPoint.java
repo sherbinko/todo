@@ -5,12 +5,14 @@ import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.*;
 import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import services.AuthService;
 import services.TaskService;
 
 /**
@@ -19,6 +21,7 @@ import services.TaskService;
  */
 @Import({
         CommonDAO.class,
+        AuthService.class,
         TaskService.class,
 
         AopAutoConfiguration.class,
@@ -33,6 +36,7 @@ import services.TaskService;
         MultipartAutoConfiguration.class,
         PersistenceExceptionTranslationAutoConfiguration.class,
         PropertyPlaceholderAutoConfiguration.class,
+        SpringBootWebSecurityConfiguration.class,
         SpringDataWebAutoConfiguration.class,
         WebMvcAutoConfiguration.class,
         WebSocketAutoConfiguration.class

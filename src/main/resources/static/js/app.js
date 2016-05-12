@@ -11,7 +11,7 @@ todoApp.controller("main", function($scope, $http, $q) {
     $scope.refreshAfterPromise = function(updatePromise) {
         return (
             updatePromise.then(function () {
-                return $http.get("/tasks")
+                return $http.get("/services/tasks")
             }).
             then(function (tasks) {
                 $scope.tasks = tasks.data;
@@ -24,14 +24,14 @@ todoApp.controller("main", function($scope, $http, $q) {
     });
 
     $scope.addTask = function (desc) {
-        $scope.refreshAfterPromise($http.put("/tasks",desc));
+        $scope.refreshAfterPromise($http.put("/services/tasks",desc));
     };
 
     $scope.deleteTask = function(id) {
-        $scope.refreshAfterPromise($http.delete("/tasks/"+id))
+        $scope.refreshAfterPromise($http.delete("/services/tasks/"+id))
     };
 
     $scope.changeStatus=function(task) {
-        $scope.refreshAfterPromise($http.post("/tasks/"+task.id+"/status", task.status));
+        $scope.refreshAfterPromise($http.post("/services/tasks/"+task.id+"/status", task.status));
     }
 });
