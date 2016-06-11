@@ -1,3 +1,6 @@
+import ch.qos.logback.core.joran.spi.JoranException;
+import com.beust.jcommander.JCommander;
+import com.google.common.base.Preconditions;
 import data.CommonDAO;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -14,6 +17,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import services.AuthService;
 import services.TaskService;
+import util.CmdLineConfig;
+
+import java.io.File;
 
 /**
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -43,13 +49,41 @@ import services.TaskService;
 })
 @ImportResource("classpath:app.xml")
 public class EntryPoint {
-    public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Usage: tasks <port> <database file>");
+    private static CmdLineConfig getConfig(String[] args) {
+        CmdLineConfig config = CmdLineConfig.getInstance();
+        JCommander jCommander = new JCommander(config);
+
+        if (args.length == 0) {
+            jCommander.usage();
+            config = null;
         } else {
-            System.setProperty("server.port", args[0]);
-            System.setProperty("db", args[1]);
-            SpringApplication.run(EntryPoint.class, args);
+            jCommander.parse(args);
+            config.validate();
+        }
+
+        return config;
+    }
+
+    private static void configureLogback(File logbackFile) throws JoranException {
+        if (logbackFile!= null) {
+            Preconditions.checkArgument(logbackFile.exists(), "Logback configuration file \"%s\" does not exist", logbackFile);
+            System.setProperty("logging.config", logbackFile.getAbsolutePath());
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            CmdLineConfig config = getConfig(args);
+
+            if (config != null) {
+                configureLogback(config.logbackFile);
+
+                SpringApplication springApplication = new SpringApplication(EntryPoint.class);
+                springApplication.run();
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 }

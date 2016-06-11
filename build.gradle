@@ -6,6 +6,8 @@
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'edu.sc.seis.launch4j'
+apply plugin: KeysPlugin
+apply plugin: UnixBinPlugin
 
 group = 'com.sherbinko'
 version = '1.0'
@@ -47,6 +49,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-loader:1.3.5.RELEASE'
     compile 'com.zaxxer:HikariCP:2.4.6'
     compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+    compile 'com.beust:jcommander:1.47'
+    compile 'com.google.guava:guava:18.0'
 }
 
 compileJava {
@@ -70,8 +74,8 @@ launch4j {
     headerType = 'console'
     outputDir = buildDir
     outfile = "${appName}.exe"
-    initialHeapSize=128
-    maxHeapSize=1024
+    initialHeapSize = 128
+    maxHeapSize = 1024
 }
 
 task removeLaunch4jXml(type: Delete) {
@@ -83,22 +87,21 @@ afterEvaluate {
 }
 
 //////////////////////////////////// Building Linux/OS X binary ////////////////////////////////////////
-task unixBin (dependsOn: jar) {
-    def launchScript = "$projectDir/src/unix/launch.sh"
-    def destBin = "$buildDir/$appName"
+unixBin {
+    jar = targetJar
+    bin = file("$buildDir/$appName")
+    script = file("$projectDir/src/unix/launch.sh")
+}
 
-    inputs.files launchScript, targetJar
-    outputs.file destBin
-
-    doLast {
-        ant.concat (destfile : destBin, binary:true) {
-            path(location: launchScript)
-            path(location: targetJar)
-        }
-    }
+//////////////////////////////////// SSL ///////////////////////////////////////////////////////////////
+keys {
+    domain = '*.localhost.tv'
+    storeFile = new File(sourceSets.main.resources.srcDirs[0], "keystore.pfx")
+    storePass = '123456'
+    certFile = new File(buildDir, 'site.cer')
 }
 
 // no tasks should run before the "clean" task
 tasks.findAll{it.name != 'clean'}*.mustRunAfter(clean)
-task all (dependsOn: ['clean','build','launch4j','unixBin'])
+task all (dependsOn: ['clean','build','launch4j','createUnixBin', 'exportCert'])
 defaultTasks 'all'
