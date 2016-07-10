@@ -4,7 +4,7 @@
     Copyright 2016, Andrey Shcherbinko. All rights reserved.
 -->
 <configuration scan="true" scanPeriod="30 seconds">
-    <property name="defaultPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%t:%X{req.remoteHost}] - %m%n" />
+    <property name="defaultPattern" value="%d{yyyy-MM-dd HH:mm:ss} %highlight([%-5p]) [%t:%X{req.remoteHost}] - %m%n" />
 
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/default.log</file>

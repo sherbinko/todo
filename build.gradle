@@ -51,6 +51,7 @@ dependencies {
     compile 'org.xerial:sqlite-jdbc:3.8.11.2'
     compile 'com.beust:jcommander:1.47'
     compile 'com.google.guava:guava:18.0'
+    compile "org.fusesource.jansi:jansi:1.8"
 }
 
 compileJava {
@@ -63,6 +64,7 @@ bootRepackage {
     mainClass = entryPoint
 
     doLast {
+        targetJar.delete()
         jar.archivePath.renameTo(targetJar)
     }
 }
@@ -83,7 +85,8 @@ task removeLaunch4jXml(type: Delete) {
 }
 
 afterEvaluate {
-    createExeWithJar.finalizedBy removeLaunch4jXml
+    createExeWithJar.inputs.files targetJar
+    createExeWithJar.finalizedBy tasks.removeLaunch4jXml
 }
 
 //////////////////////////////////// Building Linux/OS X binary ////////////////////////////////////////
@@ -101,7 +104,10 @@ keys {
     certFile = new File(buildDir, 'site.cer')
 }
 
-// no tasks should run before the "clean" task
-tasks.findAll{it.name != 'clean'}*.mustRunAfter(clean)
-task all (dependsOn: ['clean','build','launch4j','createUnixBin', 'exportCert'])
+//////////////////////////////////// Tasks Ordering ////////////////////////////////////////////////////
+tasks.findAll{it.name != 'clean'}*.mustRunAfter(tasks.clean)
+tasks.copyL4jLib.dependsOn tasks.bootRepackage
+tasks.unixBin.dependsOn tasks.bootRepackage
+
+task all (dependsOn: ['build','launch4j','unixBin', 'exportCert'])
 defaultTasks 'all'

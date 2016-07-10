@@ -2,6 +2,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Preconditions;
 import data.CommonDAO;
+import org.fusesource.jansi.AnsiConsole;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
@@ -49,6 +50,10 @@ import java.io.File;
 })
 @ImportResource("classpath:app.xml")
 public class EntryPoint {
+    static {
+        AnsiConsole.systemInstall();
+    }
+
     private static CmdLineConfig getConfig(String[] args) {
         CmdLineConfig config = CmdLineConfig.getInstance();
         JCommander jCommander = new JCommander(config);

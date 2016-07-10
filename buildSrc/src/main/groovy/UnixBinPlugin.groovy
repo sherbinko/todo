@@ -8,7 +8,7 @@ public class UnixBinPlugin implements Plugin<Project> {
     void apply(Project project) {
         UnixBinExtension ext = project.extensions.create("unixBin", UnixBinExtension)
 
-        def createUnixBinTask = project.task('createUnixBin', dependsOn: project.tasks.jar) {
+        def createUnixBinTask = project.task('unixBin', dependsOn: project.tasks.jar) {
             description 'Converts a jar into an executable unix file'
 
             doLast {
